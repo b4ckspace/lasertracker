@@ -1,0 +1,192 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+
+        <div class="row">
+            <header role="banner" class="col-lg-12 text-center">
+                <h1><span class="glyphicon glyphicon-time"></span> LaserOperation Tracker</h1>
+                <hr>
+            </header>
+        </div>
+
+
+        <div class="row">
+            <div class="col-xs-6">
+                <table class="table table-condensed">
+                    <thead>
+                        <tr>
+                            <th>Erfasst am</th>
+                            <th class="text-right">Dauer</th>
+                            <th class="text-right" width="42">&nbsp;</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for laserOperation in laserOperations %}
+                            <tr class="laser-operation">
+                                <td>{{ laserOperation.created | date('d.m.Y H:i:s')}}</td>
+                                <td class="text-right">{{ laserOperation.duration | duration }}</td>
+                                <td class="text-right">
+                                    <input type="checkbox"
+                                           name="laserOperation[{{ laserOperation.id }}]"
+                                           data-duration="{{ laserOperation.duration }}"
+                                           value="1">
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td></td>
+                            <td class="text-right duration-sum">&ndash;</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="col-xs-6">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Modus</label>
+                        <div class="col-sm-10">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="mode" value="operator" checked>
+                                    Ich bin Operator
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="mode" value="user">
+                                    Ich bin kein Operator
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="mode" value="external">
+                                    Extern
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group user hidden">
+                        <label for="userId" class="col-sm-2 control-label">Benutzer</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" name="userId" id="userId">
+                                {% for user in users | sortbyfield('name') %}
+                                    <option value="{{ user.id }}">{{ user.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group operator">
+                        <label for="operatorId" class="col-sm-2 control-label">Operator</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" name="operatorId" id="operatorId">
+                                <option></option>
+                                {% for user in users | sortbyfield('name') %}
+                                    <option value="{{ user.id }}">{{ user.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group charge">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="submit" class="btn btn-default">Buchen</button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+        $(function() {
+
+            var $charge = $('.charge');
+            var $operator = $('.operator');
+            var $user = $('.user');
+
+            var $chargeButton = $('.btn', $charge);
+
+            var $checkboxes = $('.laser-operation input[type=checkbox]');
+            var $durationSum = $('.duration-sum');
+
+            function calculateLaserDurationSum() {
+                var sum = 0;
+
+                $checkboxes
+                    .filter(':checked')
+                    .each(function() {
+                        sum += $(this).data('duration');
+                    });
+
+                return sum;
+            }
+
+            function formatDuration(seconds) {
+                var parts = [];
+
+                var hours = parseInt(seconds / 3600, 10);
+                var minutes = parseInt(seconds / 60, 10);
+                seconds = seconds % 60;
+
+                if (hours) {
+                    parts.push(hours + 'h');
+                }
+
+                if (minutes) {
+                    parts.push(minutes + 'm');
+                }
+
+                if (seconds) {
+                    parts.push(seconds + 's');
+                }
+
+                return parts.join(' ');
+            }
+
+            $checkboxes.change(function() {
+                var sum = calculateLaserDurationSum();
+
+                $chargeButton.toggleClass('disabled', (sum == 0));
+                $durationSum.text(formatDuration(sum));
+            });
+
+
+            $('input[name=mode]').change(function() {
+                var mode = $(this).val();
+
+                switch (mode) {
+                    case 'user':
+                        $operator.removeClass('hidden');
+                        $user.removeClass('hidden');
+                        break;
+
+                    case 'operator':
+                        $operator.addClass('hidden');
+                        $user.removeClass('hidden');
+                        break;
+
+                    case 'external':
+                        $operator.removeClass('hidden');
+                        $user.addClass('hidden');
+                        break;
+                }
+            });
+
+
+            $checkboxes.change();
+        });
+    </script>
+{% endblock %}

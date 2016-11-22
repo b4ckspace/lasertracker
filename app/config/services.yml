@@ -1,0 +1,15 @@
+# Learn more about services, parameters and containers at
+# http://symfony.com/doc/current/service_container.html
+parameters:
+#    parameter_name: value
+
+services:
+    app.twig_extension:
+        class: AppBundle\Twig\DurationFilter
+        public: false
+        tags:
+            - { name: twig.extension }
+    twig.extension.sortbyfield:
+        class: Snilius\Twig\SortByFieldExtension
+        tags:
+            - { name: twig.extension }
