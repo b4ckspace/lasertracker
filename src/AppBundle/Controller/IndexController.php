@@ -11,7 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 class IndexController extends Controller {
 
     /**
-     * @Route("/")
+     * @Route("/", name="index")
      */
     function indexAction() {
 
@@ -94,5 +94,6 @@ class IndexController extends Controller {
         }
 
         $em->flush();
+        return $this->redirectToRoute('index');
     }
 }
