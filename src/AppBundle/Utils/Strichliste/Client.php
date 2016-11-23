@@ -3,6 +3,8 @@
 namespace AppBundle\Utils\Strichliste;
 
 
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+
 class Client {
 
     /**
@@ -36,10 +38,32 @@ class Client {
 
         $result = [];
         foreach ($users['entries'] as $user) {
-            $result[] = new User($user['id'], $user['name'], $user['balance']);
+            $result[] = User::byUserResponse($user);
         }
 
         return $result;
+    }
+
+    /**
+     * @param User $user
+     * @param $amount
+     * @return bool
+     */
+    function createTransaction(User $user, $amount) {
+
+        $uri = sprintf('/api/user/%d/transaction', $user->getId());
+        $response = $this->client->post($uri, [
+            'json' => [
+                'value' => sprintf("%.2f", $amount)
+            ]
+        ]);
+
+        if ($response->getStatusCode() !== 200) {
+            // TODO: Better exception.
+            throw new BadRequestHttpException('Strichliste API returned with status code ' . $response->getStatusCode());
+        }
+
+        return true;
     }
 
 }

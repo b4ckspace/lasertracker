@@ -21,13 +21,21 @@ class User {
 
     /**
      * @param int $id
-     * @param string $name
-     * @param float $balance
      */
-    function __construct($id, $name, $balance) {
+    function __construct($id) {
         $this->id = $id;
-        $this->name = $name;
-        $this->balance = $balance;
+    }
+
+    /**
+     * @param array $response
+     * @return static
+     */
+    static function byUserResponse(array $response) {
+        $user = new static($response['id']);
+        $user->setName($response['name']);
+        $user->setBalance($response['balance']);
+
+        return $user;
     }
 
     /**
