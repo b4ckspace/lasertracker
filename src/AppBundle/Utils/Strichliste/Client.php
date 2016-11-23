@@ -58,7 +58,7 @@ class Client {
             ]
         ]);
 
-        if ($response->getStatusCode() !== 200) {
+        if ($response->getStatusCode() !== 201) {
             // TODO: Better exception.
             throw new BadRequestHttpException('Strichliste API returned with status code ' . $response->getStatusCode());
         }
