@@ -70,3 +70,9 @@ guzzle:
             base_url: "%laserminuten_url%"
             headers:
                 Accept: "application/json"
+
+fos_rest:
+    param_fetcher_listener: true
+
+jms_serializer:
+    enable_short_alias: false

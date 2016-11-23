@@ -30,7 +30,9 @@
         "incenteev/composer-parameter-handler": "^2.0",
         "stof/doctrine-extensions-bundle": "^1.2",
         "eightpoints/guzzle-bundle": "^5.1",
-        "snilius/twig-sort-by-field": "^0.1.5"
+        "snilius/twig-sort-by-field": "^0.1.5",
+        "friendsofsymfony/rest-bundle": "^2.1",
+        "jms/serializer-bundle": "^1.1"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",

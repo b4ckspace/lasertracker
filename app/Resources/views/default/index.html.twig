@@ -38,7 +38,9 @@
                     <tfoot>
                         <tr>
                             <td></td>
-                            <td class="text-right duration-sum">&ndash;</td>
+                            <td class="text-right duration-sum">
+                                <strong style="font-size: 18px">–</strong>
+                            </td>
                             <td></td>
                         </tr>
                     </tfoot>
@@ -71,7 +73,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group user hidden">
+                    <div class="form-group user visibility-helper hidden" data-visible-on="user">
                         <label for="userId" class="col-sm-2 control-label">Benutzer</label>
                         <div class="col-sm-10">
                             <select class="form-control" name="userId" id="userId">
@@ -82,7 +84,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group operator">
+                    <div class="form-group visibility-helper operator" data-visible-on="operator user external">
                         <label for="operatorId" class="col-sm-2 control-label">Operator</label>
                         <div class="col-sm-10">
                             <select class="form-control" name="operatorId" id="operatorId">
@@ -94,9 +96,26 @@
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        <label for="comment" class="col-sm-2 control-label">Kommentar</label>
+                        <div class="col-sm-10">
+                            <textarea name="comment" id="comment" placeholder="Optional" class="form-control"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-10 col-sm-offset-2">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="chargeAutomatically" value="1" checked> Laserminuten automatisch buchen
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="form-group charge">
                         <div class="col-sm-offset-2 col-sm-10">
-                            <button type="submit" class="btn btn-default">Buchen</button>
+                            <button type="submit" class="btn btn-success">Go for it!</button>
                         </div>
                     </div>
 
@@ -112,15 +131,10 @@
 
     <script>
         $(function() {
-
-            var $charge = $('.charge');
-            var $operator = $('.operator');
-            var $user = $('.user');
-
-            var $chargeButton = $('.btn', $charge);
-
+            var $chargeButton = $('.charge .btn');
             var $checkboxes = $('.laser-operation input[type=checkbox]');
-            var $durationSum = $('.duration-sum');
+            var $durationSum = $('.duration-sum strong');
+            var $visibilityHelper = $('.visibility-helper');
 
             function calculateLaserDurationSum() {
                 var sum = 0;
@@ -156,33 +170,31 @@
                 return parts.join(' ');
             }
 
+            function setFormButtonStatus(disable) {
+                $chargeButton
+                    .toggleClass('disabled btn-default', disable)
+                    .toggleClass('btn-success', !disable);
+            }
+
             $checkboxes.change(function() {
                 var sum = calculateLaserDurationSum();
+                var result = formatDuration(sum) || '–';
 
-                $chargeButton.toggleClass('disabled', (sum == 0));
-                $durationSum.text(formatDuration(sum));
+                setFormButtonStatus((sum == 0));
+                $durationSum.text(result);
             });
 
 
             $('input[name=mode]').change(function() {
                 var mode = $(this).val();
 
-                switch (mode) {
-                    case 'user':
-                        $operator.removeClass('hidden');
-                        $user.removeClass('hidden');
-                        break;
-
-                    case 'operator':
-                        $operator.addClass('hidden');
-                        $user.removeClass('hidden');
-                        break;
-
-                    case 'external':
-                        $operator.removeClass('hidden');
-                        $user.addClass('hidden');
-                        break;
-                }
+                $visibilityHelper
+                        .addClass('hidden')
+                        .each(function() {
+                            if($(this).data('visible-on').indexOf(mode) !== -1) {
+                                $(this).removeClass('hidden');
+                            }
+                        });
             });
 
 
