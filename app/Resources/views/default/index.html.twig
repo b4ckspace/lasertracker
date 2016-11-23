@@ -12,43 +12,43 @@
 
 
         <div class="row">
-            <div class="col-xs-6">
-                <table class="table table-condensed">
-                    <thead>
-                        <tr>
-                            <th>Erfasst am</th>
-                            <th class="text-right">Dauer</th>
-                            <th class="text-right" width="42">&nbsp;</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for laserOperation in laserOperations %}
-                            <tr class="laser-operation">
-                                <td>{{ laserOperation.created | date('d.m.Y H:i:s')}}</td>
-                                <td class="text-right">{{ laserOperation.duration | duration }}</td>
-                                <td class="text-right">
-                                    <input type="checkbox"
-                                           name="laserOperation[{{ laserOperation.id }}]"
-                                           data-duration="{{ laserOperation.duration }}"
-                                           value="1">
-                                </td>
+            <form class="form-horizontal" action="/charge" method="GET">
+                <div class="col-xs-6">
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <th>Erfasst am</th>
+                                <th class="text-right">Dauer</th>
+                                <th class="text-right" width="42">&nbsp;</th>
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td></td>
-                            <td class="text-right duration-sum">
-                                <strong style="font-size: 18px">–</strong>
-                            </td>
-                            <td></td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            {% for laserOperation in laserOperations %}
+                                <tr class="laser-operation">
+                                    <td>{{ laserOperation.created | date('d.m.Y H:i:s')}}</td>
+                                    <td class="text-right">{{ laserOperation.duration | duration }}</td>
+                                    <td class="text-right">
+                                        <input type="checkbox"
+                                               name="laserOperations[]"
+                                               data-duration="{{ laserOperation.duration }}"
+                                               value="{{ laserOperation.id }}">
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td class="text-right duration-sum">
+                                    <strong style="font-size: 18px">–</strong>
+                                </td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
 
-            <div class="col-xs-6">
-                <form class="form-horizontal">
+                <div class="col-xs-6">
                     <div class="form-group">
                         <label class="col-sm-2 control-label">Modus</label>
                         <div class="col-sm-10">
@@ -119,10 +119,9 @@
                         </div>
                     </div>
 
-                </form>
+                </div>
             </div>
-        </div>
-
+        </form>
     </div>
 {% endblock %}
 
