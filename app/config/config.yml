@@ -76,3 +76,10 @@ fos_rest:
 
 jms_serializer:
     enable_short_alias: false
+
+knp_paginator:
+    page_range: 5
+    default_options:
+        page_name: page
+    template:
+        pagination: KnpPaginatorBundle:Pagination:twitter_bootstrap_v3_pagination.html.twig

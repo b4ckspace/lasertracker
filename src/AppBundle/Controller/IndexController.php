@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Transaction;
 use AppBundle\Utils\Strichliste;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
@@ -16,13 +17,11 @@ class IndexController extends Controller {
     function indexAction() {
 
         $laserOperations = $this->getDoctrine()
-            ->getRepository('AppBundle:LaserOperations')
-            ->findBy([
-                'userId' => null,
-                'operatorId' => null
-            ], [
-                'id' => 'DESC'
-            ]);
+            ->getRepository('AppBundle:LaserOperation')
+            ->findBy(
+                ['transaction' => null],
+                ['id' => 'DESC']
+            );
 
         // TODO: Use DI for strichliste.client
         $client = $this->get('guzzle.client.laserminuten');
@@ -54,23 +53,29 @@ class IndexController extends Controller {
         $operatorId = $paramFetcher->get('operatorId');
 
         $sumSeconds = 0;
-        $laserOperations = $em->getRepository('AppBundle:LaserOperations');
+        $laserOperations = $em->getRepository('AppBundle:LaserOperation');
+
+        $transaction = new Transaction();
+        $transaction
+            ->setOperatorId($operatorId)
+            ->setUserId($userId);
+
+        if ($comment) {
+            $transaction->setComment($comment);
+        }
 
         foreach($paramFetcher->get('laserOperations') as $id) {
             $laserOperation = $laserOperations->find($id);
-
-            $laserOperation
-                ->setOperatorId($operatorId)
-                ->setUserId($userId);
-
-            if ($comment) {
-                $laserOperation->setComment($comment);
-            }
+            $laserOperation->setTransaction($transaction);
 
             $sumSeconds += $laserOperation->getDuration();
         }
 
+        $transaction->setDuration($sumSeconds);
         $laserMinutes = $sumSeconds / 60;
+
+        $userTransactionId = null;
+        $operatorTransactionId = null;
 
         if ($paramFetcher->get('chargeAutomatically')) {
             // TODO: Use DI for strichliste.client
@@ -79,21 +84,27 @@ class IndexController extends Controller {
 
             switch ($mode) {
                 case 'operator':
-                    $strichliste->createTransaction(new Strichliste\User($operatorId), $laserMinutes * -1);
+                    $operatorTransactionId = $strichliste->createTransaction(new Strichliste\User($operatorId), $laserMinutes * -1);
                     break;
 
                 case 'user':
-                    $strichliste->createTransaction(new Strichliste\User($userId), $laserMinutes * 2 * -1);
-                    $strichliste->createTransaction(new Strichliste\User($operatorId), $laserMinutes);
+                    $userTransactionId = $strichliste->createTransaction(new Strichliste\User($userId), $laserMinutes * 2 * -1);
+                    $operatorTransactionId = $strichliste->createTransaction(new Strichliste\User($operatorId), $laserMinutes);
                     break;
 
                 case 'external':
-                    $strichliste->createTransaction(new Strichliste\User($operatorId), $laserMinutes);
+                    $operatorTransactionId = $strichliste->createTransaction(new Strichliste\User($operatorId), $laserMinutes);
                     break;
             }
         }
 
+        $transaction
+            ->setOperatorTransactionId($operatorTransactionId)
+            ->setUserTransactionId($userTransactionId);
+
+        $em->persist($transaction);
         $em->flush();
+
         return $this->redirectToRoute('index');
     }
 }

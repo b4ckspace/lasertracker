@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\LaserOperation;
 use AppBundle\Entity\LaserOperations;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -21,7 +22,7 @@ class ApiController extends Controller  {
             throw new BadRequestHttpException('Invalid value for duration');
         }
 
-        $operation = new LaserOperations();
+        $operation = new LaserOperation();
         $operation->setDuration($duration);
 
         $em = $this->getDoctrine()->getManager();

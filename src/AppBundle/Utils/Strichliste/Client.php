@@ -20,7 +20,7 @@ class Client {
     }
 
     /**
-     * @return array|null
+     * @return User[]
      */
     function getUsers() {
         $response = $this->client->get('/api/user');
@@ -63,7 +63,8 @@ class Client {
             throw new BadRequestHttpException('Strichliste API returned with status code ' . $response->getStatusCode());
         }
 
-        return true;
+        $json = json_decode($response->getBody(), true);
+        return $json['id'];
     }
 
 }

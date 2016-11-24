@@ -17,7 +17,7 @@
                         <tbody>
                             {% for laserOperation in laserOperations %}
                                 <tr class="laser-operation">
-                                    <td>{{ laserOperation.created | date('d.m.Y H:i:s')}}</td>
+                                    <td>{{ laserOperation.created | date('d.m.Y H:i:s') }}</td>
                                     <td class="text-right">{{ laserOperation.duration | duration }}</td>
                                     <td class="text-right">
                                         <input type="checkbox"
@@ -99,7 +99,8 @@
                         <div class="col-sm-10 col-sm-offset-2">
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" name="chargeAutomatically" value="1" checked> Laserminuten automatisch buchen
+                                    <input type="checkbox" name="chargeAutomatically" value="1" checked>
+                                    <a href="http://laserminuten.core.bckspc.de" target="_blank">Laserminuten</a> automatisch buchen
                                 </label>
                             </div>
                         </div>

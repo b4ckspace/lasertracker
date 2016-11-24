@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <table class="table table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th width="300">Benutzer</th>
+                        <th width="300">Operator</th>
+                        <th>Dauer</th>
+                        <th width="200">Erfasst am</th>
+                        <th width="200">Geändert am</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in pagination %}
+                        <tr>
+                            <th>Buchungsvorgang #{{ transaction.id }}</th>
+                            <th>
+                                <a href="https://demo.strichliste.org/api/user/{{ transaction.userId }}/transaction/{{ transaction.userTransactionId }}">
+                                    {{ transaction.userTransactionId }}
+                                </a>
+                            </th>
+                            <th>
+                                <a href="https://demo.strichliste.org/api/user/{{ transaction.operatorId }}/transaction/{{ transaction.operatorTransactionId }}">
+                                    {{ transaction.operatorTransactionId }}
+                                </a>
+                            </th>
+                            <th>{{ transaction.comment }}</th>
+                            <th>{{ transaction.duration | duration }}</th>
+                        </tr>
+                        {% for laserOperation in transaction.laserOperations %}
+                            <tr {% if loop.last %} style="border-bottom: 1px solid black" {% endif %}>
+                                <td>
+                                    <a href="http://laserminuten.core.bckspc.de/#/user/{{ transaction.userId }}" target="_blank">
+                                        {{ strichlisteUserMapping[transaction.userId].name }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="http://laserminuten.core.bckspc.de/#/user/{{ transaction.operatorId }}" target="_blank">
+                                        {{ strichlisteUserMapping[transaction.operatorId].name }}
+                                    </a>
+                                </td>
+                                <td>{{ laserOperation.duration | duration }}</td>
+                                <td>{{ laserOperation.created | date('d.m.Y H:i:s') }}</td>
+                                <td>{{ laserOperation.updated | date('d.m.Y H:i:s')}}</td>
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+
+
+            {{ knp_pagination_render(pagination) }}
+        </div>
+    </div>
+{% endblock %}
