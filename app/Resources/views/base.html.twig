@@ -31,11 +31,13 @@
                                 <span class="glyphicon glyphicon-th-list"></span> Historie
                             </a>
                         </li>
+                        <!--
                         <li>
-                            <a href="/statistics">
+                            <a href="/statistics" {% if app.request.get('_route') == 'statistics' %} class="active"{% endif %}>
                                 <span class="glyphicon glyphicon-stats"></span> Statistiken
                             </a>
                         </li>
+                        -->
                     </ul>
                 </div>
             </div>

@@ -12,7 +12,7 @@ class HistoryController extends Controller {
     /**
      * @Route("/history", name="history")
      */
-    function statisticsAction(Request $request) {
+    function historyAction(Request $request) {
 
         $em = $this->getDoctrine()->getManager();
         $page = $request->query->getInt('page', 1);
