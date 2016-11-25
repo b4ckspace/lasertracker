@@ -47,6 +47,8 @@ class IndexController extends Controller {
     function chargeAction(ParamFetcher $paramFetcher) {
         $em = $this->getDoctrine()->getManager();
 
+        // TODO: Sanity checking (if operatorId/userId exists / is set etc...)
+
         $mode = $paramFetcher->get('mode');
         $comment = $paramFetcher->get('comment');
         $userId = $paramFetcher->get('userId');
@@ -56,10 +58,6 @@ class IndexController extends Controller {
         $laserOperations = $em->getRepository('AppBundle:LaserOperation');
 
         $transaction = new Transaction();
-        $transaction
-            ->setOperatorId($operatorId)
-            ->setUserId($userId);
-
         if ($comment) {
             $transaction->setComment($comment);
         }
@@ -85,6 +83,7 @@ class IndexController extends Controller {
             switch ($mode) {
                 case 'operator':
                     $operatorTransactionId = $strichliste->createTransaction(new Strichliste\User($operatorId), $laserMinutes * -1);
+                    $userId = null;
                     break;
 
                 case 'user':
@@ -94,17 +93,22 @@ class IndexController extends Controller {
 
                 case 'external':
                     $operatorTransactionId = $strichliste->createTransaction(new Strichliste\User($operatorId), $laserMinutes);
+                    $userId = null;
                     break;
             }
         }
 
         $transaction
             ->setOperatorTransactionId($operatorTransactionId)
-            ->setUserTransactionId($userTransactionId);
+            ->setUserTransactionId($userTransactionId)
+            ->setOperatorId($operatorId)
+            ->setUserId($userId)
+            ->setMode($mode);
 
         $em->persist($transaction);
         $em->flush();
 
+        $this->addFlash('info', 'Gespeichert! Bitte noch an die Materialabrechnung denken!');
         return $this->redirectToRoute('index');
     }
 }

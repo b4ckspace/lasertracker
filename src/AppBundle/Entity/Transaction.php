@@ -61,6 +61,12 @@ class Transaction implements \JsonSerializable {
     private $comment = null;
 
     /**
+     * @ORM\Column(type="string", length=16)
+     * @var string
+     */
+    private $mode;
+
+    /**
      * @Gedmo\Timestampable(on="create")
      * @ORM\Column(name="created", type="datetime")
      * @var \DateTime
@@ -219,7 +225,21 @@ class Transaction implements \JsonSerializable {
 
         return $this;
     }
-    
+
+    /**
+     * @return string
+     */
+    function getMode() {
+        return $this->mode;
+    }
+
+    /**
+     * @param string $mode
+     */
+    function setMode($mode) {
+        $this->mode = $mode;
+    }
+
     /**
      * @return array
      */

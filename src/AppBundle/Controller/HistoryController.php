@@ -17,10 +17,10 @@ class HistoryController extends Controller {
         $em = $this->getDoctrine()->getManager();
         $page = $request->query->getInt('page', 1);
 
-        $query = $em->createQuery('SELECT t FROM AppBundle:Transaction t');
+        $query = $em->createQuery('SELECT t FROM AppBundle:Transaction t ORDER by t.id DESC');
 
         $paginator  = $this->get('knp_paginator');
-        $pagination = $paginator->paginate($query, $page, 5);
+        $pagination = $paginator->paginate($query, $page, 10);
 
 
         // TODO: Use DI for strichliste.client
