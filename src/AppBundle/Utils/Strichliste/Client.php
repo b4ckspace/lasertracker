@@ -2,7 +2,6 @@
 
 namespace AppBundle\Utils\Strichliste;
 
-
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class Client {
@@ -26,19 +25,17 @@ class Client {
         $response = $this->client->get('/api/user');
 
         if ($response->getStatusCode() !== 200) {
-            // TODO: Throw exception
-            return null;
+            throw new BadRequestHttpException('Strichliste API returned with status code ' . $response->getStatusCode());
         }
 
         $users = json_decode($response->getBody(), true);
         if (!$users) {
-            // TODO: Throw exception
-            return null;
+            throw new \Exception('Can\'t parse json response');
         }
 
         $result = [];
         foreach ($users['entries'] as $user) {
-            $result[] = User::byUserResponse($user);
+            $result[] = User::byResponse($user);
         }
 
         return $result;
@@ -47,7 +44,7 @@ class Client {
     /**
      * @param User $user
      * @param $amount
-     * @return bool
+     * @return Transaction
      */
     function createTransaction(User $user, $amount) {
 
@@ -59,12 +56,15 @@ class Client {
         ]);
 
         if ($response->getStatusCode() !== 201) {
-            // TODO: Better exception.
             throw new BadRequestHttpException('Strichliste API returned with status code ' . $response->getStatusCode());
         }
 
         $json = json_decode($response->getBody(), true);
-        return $json['id'];
+        if (!$json) {
+            throw new \Exception('Can\'t parse json response');
+        }
+
+        return Transaction::byResponse($json);
     }
 
 }

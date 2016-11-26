@@ -8,6 +8,7 @@ use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class IndexController extends Controller {
 
@@ -48,13 +49,11 @@ class IndexController extends Controller {
         $em = $this->getDoctrine()->getManager();
 
         // TODO: Sanity checking (if operatorId/userId exists / is set etc...)
-
         $mode = $paramFetcher->get('mode');
         $comment = $paramFetcher->get('comment');
         $userId = $paramFetcher->get('userId');
         $operatorId = $paramFetcher->get('operatorId');
 
-        $sumSeconds = 0;
         $laserOperations = $em->getRepository('AppBundle:LaserOperation');
 
         $transaction = new Transaction();
@@ -62,48 +61,64 @@ class IndexController extends Controller {
             $transaction->setComment($comment);
         }
 
+        $sumDuration = 0;
         foreach($paramFetcher->get('laserOperations') as $id) {
             $laserOperation = $laserOperations->find($id);
-            $laserOperation->setTransaction($transaction);
 
-            $sumSeconds += $laserOperation->getDuration();
+            if ($laserOperation === null) {
+                throw new BadRequestHttpException('Can\'t find LaserOperation with id ' . $id);
+            }
+
+            if ($laserOperation->getTransaction() !== null) {
+                throw new BadRequestHttpException('LaserOperation #' . $id . ' is already assigned to an transaction');
+            }
+
+            $laserOperation->setTransaction($transaction);
+            $sumDuration += $laserOperation->getDuration();
         }
 
-        $transaction->setDuration($sumSeconds);
-        $laserMinutes = $sumSeconds / 60;
+        $transaction->setDuration($sumDuration);
+        $laserCredits = $sumDuration / 60;
 
-        $userTransactionId = null;
-        $operatorTransactionId = null;
+        $userTransaction = null;
+        $operatorTransaction = null;
 
         if ($paramFetcher->get('chargeAutomatically')) {
             // TODO: Use DI for strichliste.client
             $client = $this->get('guzzle.client.laserminuten');
             $strichliste = new Strichliste\Client($client);
 
+            // Check if userId / operatorId exists and is needed
             switch ($mode) {
                 case 'operator':
-                    $operatorTransactionId = $strichliste->createTransaction(new Strichliste\User($operatorId), $laserMinutes * -1);
+                    $operatorTransaction = $strichliste->createTransaction(new Strichliste\User($operatorId), $laserCredits * -1);
                     $userId = null;
                     break;
 
                 case 'user':
-                    $userTransactionId = $strichliste->createTransaction(new Strichliste\User($userId), $laserMinutes * 2 * -1);
-                    $operatorTransactionId = $strichliste->createTransaction(new Strichliste\User($operatorId), $laserMinutes);
+                    $userTransaction = $strichliste->createTransaction(new Strichliste\User($userId), $laserCredits * 2 * -1);
+                    $operatorTransaction = $strichliste->createTransaction(new Strichliste\User($operatorId), $laserCredits);
                     break;
 
                 case 'external':
-                    $operatorTransactionId = $strichliste->createTransaction(new Strichliste\User($operatorId), $laserMinutes);
+                    $operatorTransaction = $strichliste->createTransaction(new Strichliste\User($operatorId), $laserCredits);
                     $userId = null;
                     break;
             }
         }
 
         $transaction
-            ->setOperatorTransactionId($operatorTransactionId)
-            ->setUserTransactionId($userTransactionId)
             ->setOperatorId($operatorId)
             ->setUserId($userId)
             ->setMode($mode);
+
+        if ($operatorTransaction) {
+            $transaction->setOperatorTransactionId($operatorTransaction->getId());
+        }
+
+        if ($userTransaction) {
+            $transaction->setOperatorTransactionId($userTransaction->getId());
+        }
 
         $em->persist($transaction);
         $em->flush();
@@ -111,4 +126,5 @@ class IndexController extends Controller {
         $this->addFlash('info', 'Gespeichert! Bitte noch an die Materialabrechnung denken!');
         return $this->redirectToRoute('index');
     }
+
 }

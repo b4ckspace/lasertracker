@@ -30,7 +30,7 @@ class User {
      * @param array $response
      * @return static
      */
-    static function byUserResponse(array $response) {
+    static function byResponse(array $response) {
         $user = new static($response['id']);
         $user->setName($response['name']);
         $user->setBalance($response['balance']);
