@@ -1,5 +1,6 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}{{ parent() }} - Historie{% endblock %}
 {% block body %}
     <div class="container">
         {% for transaction in pagination %}
