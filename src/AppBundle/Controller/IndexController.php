@@ -117,7 +117,7 @@ class IndexController extends Controller {
         }
 
         if ($userTransaction) {
-            $transaction->setOperatorTransactionId($userTransaction->getId());
+            $transaction->setUserTransactionId($userTransaction->getId());
         }
 
         $em->persist($transaction);
