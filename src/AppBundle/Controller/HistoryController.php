@@ -24,7 +24,7 @@ class HistoryController extends Controller {
 
 
         // TODO: Use DI for strichliste.client
-        $client = $this->get('guzzle.client.laserminuten');
+        $client = $this->get('guzzle.client.strichliste');
         $strichliste = new Strichliste\Client($client);
 
         $strichlisteUserMapping = [];

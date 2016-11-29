@@ -16,11 +16,11 @@
                         <tr>
                             <th>Operator</th>
                             <td>
-                                <a href="{{ strichliste }}/#/user/{{ transaction.operatorId }}" target="_blank">
+                                <a href="{{ strichliste_url }}/#/user/{{ transaction.operatorId }}" target="_blank">
                                     {{ strichlisteUserMapping[transaction.operatorId].name }}
                                 </a>
 
-                                (<a href="{{ strichliste }}/api/user/{{ transaction.operatorId }}/transaction/{{ transaction.operatorTransactionId }}"
+                                (<a href="{{ strichliste_url }}/api/user/{{ transaction.operatorId }}/transaction/{{ transaction.operatorTransactionId }}"
                                     target="_blank">#{{ transaction.operatorTransactionId }}</a>)
                             </td>
                         </tr>
@@ -29,11 +29,11 @@
                             <tr>
                                 <th>User</th>
                                 <td>
-                                    <a href="{{ strichliste }}/#/user/{{ transaction.userId }}" target="_blank">
+                                    <a href="{{ strichliste_url }}/#/user/{{ transaction.userId }}" target="_blank">
                                         {{ strichlisteUserMapping[transaction.userId].name }}
                                     </a>
 
-                                    (<a href="{{ strichliste }}/api/user/{{ transaction.userId }}/transaction/{{ transaction.userTransactionId }}"
+                                    (<a href="{{ strichliste_url }}/api/user/{{ transaction.userId }}/transaction/{{ transaction.userTransactionId }}"
                                        target="_blank">#{{ transaction.userTransactionId }}</a>)
                                 </td>
                             </tr>

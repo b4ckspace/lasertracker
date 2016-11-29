@@ -37,7 +37,7 @@ twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
     globals:
-        strichliste: "%laserminuten_url%"
+        strichliste_url: "%strichliste_url%"
 
 # Doctrine Configuration
 doctrine:
@@ -68,8 +68,8 @@ guzzle:
     logging: true
 
     clients:
-        laserminuten:
-            base_url: "%laserminuten_url%"
+        strichliste:
+            base_url: "%strichliste_url%"
             headers:
                 Accept: "application/json"
 

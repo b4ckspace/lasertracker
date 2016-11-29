@@ -4,7 +4,7 @@
 parameters:
     database_path: "%kernel.root_dir%/data.sqlite"
 
-    laserminuten_url: 'https://demo.strichliste.org'
+    strichliste_url: 'https://demo.strichliste.org'
 
     mailer_transport:  smtp
     mailer_host:       127.0.0.1

@@ -25,7 +25,7 @@ class IndexController extends Controller {
             );
 
         // TODO: Use DI for strichliste.client
-        $client = $this->get('guzzle.client.laserminuten');
+        $client = $this->get('guzzle.client.strichliste');
         $strichliste = new Strichliste\Client($client);
 
         return $this->render('default/index.html.twig', array(
@@ -85,7 +85,7 @@ class IndexController extends Controller {
 
         if ($paramFetcher->get('chargeAutomatically')) {
             // TODO: Use DI for strichliste.client
-            $client = $this->get('guzzle.client.laserminuten');
+            $client = $this->get('guzzle.client.strichliste');
             $strichliste = new Strichliste\Client($client);
 
             // Check if userId / operatorId exists and is needed
