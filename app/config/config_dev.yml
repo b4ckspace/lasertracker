@@ -30,5 +30,10 @@ monolog:
         #    type:   chromephp
         #    level:  info
 
+doctrine:
+  dbal:
+      driver:   pdo_sqlite
+      charset:  UTF8
+      path:     "%kernel.root_dir%/data.sqlite"
 #swiftmailer:
 #    delivery_address: me@example.com
