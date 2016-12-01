@@ -43,7 +43,9 @@
                                 <td class="text-right duration-sum">
                                     <strong style="font-size: 18px">–</strong>
                                 </td>
-                                <td></td>
+                                <td class="text-right">
+                                    <input type="checkbox" class="select-all" title="Alle auswählen">
+                                </td>
                             </tr>
                         </tfoot>
                     </table>
@@ -188,6 +190,9 @@
 
                 setFormButtonStatus((sum == 0));
                 $durationSum.text(result);
+
+                var isEverythingChecked = ($checkboxes.filter(':checked').length == $checkboxes.length);
+                $('.select-all').prop('checked', isEverythingChecked);
             });
 
 
@@ -201,6 +206,12 @@
                                 $(this).removeClass('hidden');
                             }
                         });
+            });
+
+            $('.select-all').change(function() {
+                $checkboxes
+                    .prop('checked', $(this).prop('checked'))
+                    .change();
             });
 
 
