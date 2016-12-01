@@ -40,6 +40,7 @@ class IndexController extends Controller {
      * @QueryParam(name="userId", requirements="\d+")
      * @QueryParam(name="comment", default=null)
      * @QueryParam(name="chargeAutomatically", requirements="\d", default="0")
+     * @QueryParam(name="passOnLaserCredits", requirements="\d", default="0")
      * @QueryParam(name="laserOperations", map=true, requirements="\d+", strict=true)
      *
      * @Route("/charge")
@@ -53,6 +54,7 @@ class IndexController extends Controller {
         $comment = $paramFetcher->get('comment');
         $userId = $paramFetcher->get('userId');
         $operatorId = $paramFetcher->get('operatorId');
+        $passOnLaserCredits = $paramFetcher->get('passOnLaserCredits');
 
         $laserOperations = $em->getRepository('AppBundle:LaserOperation');
 
@@ -96,12 +98,20 @@ class IndexController extends Controller {
                     break;
 
                 case 'user':
-                    $userTransaction = $strichliste->createTransaction(new Strichliste\User($userId), $laserCredits * 2 * -1);
-                    $operatorTransaction = $strichliste->createTransaction(new Strichliste\User($operatorId), $laserCredits);
+                    if ($passOnLaserCredits) {
+                        $userTransaction = $strichliste->createTransaction(new Strichliste\User($userId), $laserCredits * -1);
+                    } else {
+                        $userTransaction = $strichliste->createTransaction(new Strichliste\User($userId), $laserCredits * 2 * -1);
+                        $operatorTransaction = $strichliste->createTransaction(new Strichliste\User($operatorId), $laserCredits);
+                    }
+
                     break;
 
                 case 'external':
-                    $operatorTransaction = $strichliste->createTransaction(new Strichliste\User($operatorId), $laserCredits);
+                    if (!$passOnLaserCredits) {
+                        $operatorTransaction = $strichliste->createTransaction(new Strichliste\User($operatorId), $laserCredits);
+                    }
+
                     $userId = null;
                     break;
             }

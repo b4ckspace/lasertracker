@@ -94,6 +94,12 @@
                                     <option value="{{ user.id }}">{{ user.name }}</option>
                                 {% endfor %}
                             </select>
+
+                            <div class="checkbox visibility-helper hidden" data-visible-on="user external">
+                                <label>
+                                    <input type="checkbox" name="passOnLaserCredits" value="1"> Auf Lasercredits verzichten
+                                </label>
+                            </div>
                         </div>
                     </div>
 
