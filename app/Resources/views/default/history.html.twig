@@ -20,8 +20,12 @@
                                     {{ strichlisteUserMapping[transaction.operatorId].name }}
                                 </a>
 
-                                (<a href="{{ strichliste_url }}/api/user/{{ transaction.operatorId }}/transaction/{{ transaction.operatorTransactionId }}"
-                                    target="_blank">#{{ transaction.operatorTransactionId }}</a>)
+                                {% if transaction.operatorTransactionId %}
+                                    (<a href="{{ strichliste_url }}/api/user/{{ transaction.operatorId }}/transaction/{{ transaction.operatorTransactionId }}"
+                                        target="_blank">#{{ transaction.operatorTransactionId }}</a>)
+                                {% else %}
+                                    (verzichtet)
+                                {% endif %}
                             </td>
                         </tr>
 
