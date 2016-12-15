@@ -17,7 +17,7 @@ class DurationFilter extends \Twig_Extension {
         $parts = [];
 
         $hours = (int) ($seconds / 3600);
-        $minutes = (int) ($seconds / 60);
+        $minutes = (int) ($seconds % 3600) / 60;
         $seconds = (int) ($seconds % 60);
 
         if ($hours) {
